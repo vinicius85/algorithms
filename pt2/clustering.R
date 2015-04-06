@@ -1,3 +1,6 @@
+library('stringdist')
+
+## find function of union-find data structure
 find <- function(n,clusters){
   name <- NULL
   for (i in 1:length(clusters)){
@@ -9,14 +12,16 @@ find <- function(n,clusters){
   name
 }
 
+
+
 ## Kruskal's union-find based algorithm to compute max spacing k-clustering
-## Complexity O (|V| log |E|) same as heap-based prim's algorithm
+## Complexity O (|V| log |E|) - same as heap-based prim's algorithm
 max_spacing <- function(num_clusters, filename){
   
   input <- read.csv(filename, header = FALSE, sep = " ")
   num_nodes<-input[1, 'V1']
   
-  ##Generate undirected graph
+  ##Generate graph
   n_data <- input[2:nrow(input),]
   k <- nrow(n_data)-1
   
@@ -41,6 +46,8 @@ max_spacing <- function(num_clusters, filename){
     c2 <- find(edge$V2,clusters)
   
     i <- i + 1
+    
+    #if nodes are already in same cluster, skip edge
     if(c1 == c2){
       next
     }
@@ -48,7 +55,8 @@ max_spacing <- function(num_clusters, filename){
     #union operation
     clusters[[c1]] <- c(clusters[[c1]], clusters[[c2]])
     clusters[c2] <- list(NULL)
-
+    
+    #update number of non-empty clusters
     n <- length(Filter(Negate(is.null),clusters))
   }
   
@@ -61,6 +69,5 @@ max_spacing <- function(num_clusters, filename){
     result <- subset(n_data, V1 %in% filtered[[i]] & V2 %in% unlist(filtered[-i]), select = V3)
     min <- c(min,as.vector(result$V3))
   }
-  
   min[order(min)][1]
 }
